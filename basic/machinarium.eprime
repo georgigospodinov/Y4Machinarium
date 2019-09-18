@@ -1,0 +1,131 @@
+language ESSENCE' 1.0
+
+$<editor-fold> Description.
+$ This is the basic constraint model for this planning problem.
+$ The movement of the token is modeled one square at a time.
+$ The output of the solver is the coordinates of the cells
+$ in the order they get visited.
+$ The terms 'cell' and 'square' are used synonymously.
+$</editor-fold>
+
+$ The initial grid, provided by the parameter file.
+given initial_grid: matrix indexed by [int(1..N), int(1..M)] of int(0, 1)
+
+$<editor-fold> Constants to make reading constraints easier
+letting BLACK be 1
+letting WHITE be 0
+letting TOTAL_WHITE be (N*M) - (sum i : int(1..N) .
+                                    sum j : int(1..M).
+                                        initial_grid[i,j])
+
+letting ROW be 1
+letting COL be 2
+letting SIZE be domain int(1..TOTAL_WHITE)
+$</editor-fold>
+
+$ The list of cells that the token moves through.
+find cells: matrix indexed by [SIZE, int(ROW,COL)] of int (1..max(N,M))
+$ Now 'cells[i,ROW]' refers to the row of cell i. And 'cells[i,COL]' refers to the column of cell i.
+
+such that
+
+$<editor-fold> Basic limitations.
+$ The coordinates are all in the appropriate ranges.
+forAll i : SIZE .
+    cells[i,ROW] <= N /\ cells[i,COL] <= M,
+
+$ The found cells should initially be white.
+forAll i : SIZE .
+    initial_grid[cells[i,ROW],cells[i,COL]] = WHITE,
+
+$ The found cells should all be different.
+forAll i : int(2..TOTAL_WHITE) .
+    forAll j : int(1..i-1) .
+        cells[i,ROW] != cells[j,ROW] \/ cells[i,COL] != cells[j,COL],
+
+$ The found cells should all be adjacent (horizontally or vertically but not diagonally).
+forAll i : int(1..TOTAL_WHITE-1) .
+    |cells[i,ROW] - cells[i+1,ROW]| + |cells[i,COL] - cells[i+1,COL]| = 1,
+$</editor-fold>
+
+$<editor-fold> Moving constraing description.
+$ Should continue moving in one direction as much as possible.
+$ Note: No need to constrain first and last (i = 1 and i = TOTAL_WHITE).
+$ The first move can be anywhere and then
+$ the second move has to determine direction of movement.
+$ The last move can also be anywhere.
+$ Due to previous constraints, all other cells will be covered and
+$ the last move will be into the last WHITE cell.
+$</editor-fold>
+
+$<editor-fold> Keep moving down.
+$ If last move was down, either reach obstacle or move further down.
+forAll i : int(2..TOTAL_WHITE-1) .
+    cells[i,ROW] > cells[i-1,ROW] -> (
+        $ reached end of grid
+        cells[i,ROW] = N \/
+
+        $ reached a cell that is initially BLACK
+        initial_grid[cells[i,ROW]+1, cells[i,COL]] = BLACK \/
+
+        $ reached a cell that is covered by a previous move
+        exists j : int(1..i-1) . (cells[j,ROW] = cells[i,ROW]+1 /\ cells[j,COL] = cells[i,COL]) \/
+
+        $ the next cell down is WHITE (not BLACK), and has not been covered by a previous move
+        (cells[i+1,ROW] = cells[i,ROW]+1 /\ cells[i+1,COL] = cells[i,COL])
+    ),
+$</editor-fold>
+
+$<editor-fold> Keep moving up.
+$ If last move was up, either reach obstacle or move further up.
+forAll i : int(2..TOTAL_WHITE-1) .
+    cells[i,ROW] < cells[i-1,ROW] -> (
+        $ reached end of grid
+        cells[i,ROW] = 1 \/
+
+        $ reached a cell that is initially BLACK
+        initial_grid[cells[i,ROW]-1, cells[i,COL]] = BLACK \/
+
+        $ reached a cell that is covered by a previous move
+        exists j : int(1..i-1) . (cells[j,ROW] = cells[i,ROW]-1 /\ cells[j,COL] = cells[i,COL]) \/
+
+        $ the next cell up is WHITE (not BLACK), and has not been covered by a previous move
+        (cells[i+1,ROW] = cells[i,ROW]-1 /\ cells[i+1,COL] = cells[i,COL])
+    ),
+$</editor-fold>
+
+$<editor-fold> Keep moving right.
+$ If last move was right, either reach obstacle or move further right.
+forAll i : int(2..TOTAL_WHITE-1) .
+    cells[i,COL] > cells[i-1,COL] -> (
+        $ reached end of grid
+        cells[i,COL] = M \/
+
+        $ reached a cell that is initially BLACK
+        initial_grid[cells[i,ROW], cells[i,COL]+1] = BLACK \/
+
+        $ reached a cell that is covered by a previous move
+        exists j : int(1..i-1) . (cells[j,ROW] = cells[i,ROW] /\ cells[j,COL] = cells[i,COL]+1) \/
+
+        $ the next cell down is WHITE (not BLACK), and has not been covered by a previous move
+        (cells[i+1,ROW] = cells[i,ROW] /\ cells[i+1,COL] = cells[i,COL]+1)
+    ),
+$</editor-fold>
+
+$<editor-fold> Keep moving left.
+$ If last move was left, either reach obstacle or move further left.
+forAll i : int(2..TOTAL_WHITE-1) .
+    cells[i,COL] < cells[i-1,COL] -> (
+        $ reached end of grid
+        cells[i,COL] = 1 \/
+
+        $ reached a cell that is initially BLACK
+        initial_grid[cells[i,ROW], cells[i,COL]-1] = BLACK \/
+
+        $ reached a cell that is covered by a previous move
+        exists j : int(1..i-1) . (cells[j,ROW] = cells[i,ROW] /\ cells[j,COL] = cells[i,COL]-1) \/
+
+        $ the next cell down is WHITE (not BLACK), and has not been covered by a previous move
+        (cells[i+1,ROW] = cells[i,ROW] /\ cells[i+1,COL] = cells[i,COL]-1)
+    )
+$</editor-fold>

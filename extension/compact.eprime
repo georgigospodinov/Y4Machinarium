@@ -1,0 +1,311 @@
+language ESSENCE' 1.0
+
+$<editor-fold> Description.
+$ This is the compact model for this planning problem.
+$ The movement of the token is modeled one turning point at a time.
+$ The output of the solver coordinates representing the cells in the grid
+$ where the token must make a turn.
+$ This model also determines the number of moves (turning points)
+$ needed to solve the puzzle.
+$</editor-fold>
+
+$ The initial grid, provided by the parameter file.
+given initial_grid : matrix indexed by [int(1..N), int(1..M)] of int(0, 1)
+
+$<editor-fold> Constants to make reading the constraints easier.
+letting BLACK be 1
+letting WHITE be 0
+
+letting START be 0
+letting END be 1
+
+letting ROW be 1
+letting COL be 2
+
+letting EMPTY be 0
+
+$ Domains used to index the grid.
+letting ROW_DOMAIN be domain int(1..N)
+letting COL_DOMAIN be domain int(1..M)
+
+$ The larger dimension. Rarely used.
+letting LARGER be max(N, M)
+
+$ The total number of cells in the grid. Rarely used.
+letting TOTAL_CELLS be N*M
+
+$ This is the maximum number of turning points that may be needed.
+$ It is equivalent to moving one white cell at a time.
+letting MAX_TURNING_POINTS be TOTAL_CELLS - (sum r : ROW_DOMAIN .
+                                                 sum c : COL_DOMAIN .
+                                                     initial_grid[r,c])
+letting MIN_TURNING_POINTS be ((2*(MAX_TURNING_POINTS-1))/LARGER)
+$ Remember that there is an initial point (indexed 0) before the turning points.
+
+$ The domain used to index the turning points (excluding the initial point).
+letting TURNING_POINTS be domain int(1..MAX_TURNING_POINTS)
+$ The domain used to index the turning point (including the initial point).
+letting ALL_POINTS be domain int(0..MAX_TURNING_POINTS)
+$</editor-fold>
+
+$<editor-fold> Decision variables.
+$ This is the number of turning points that are actually needed to solve the problem.
+find numberOfTurningPoints : int(MIN_TURNING_POINTS..MAX_TURNING_POINTS)
+
+$ These are the turning points on which the token makes a turn.
+$ turningPoints[0] is the point where the token starts
+$ turningPoints[numberOfTurningPoints] is the last white point in the grid
+find turningPoints : matrix indexed by [ALL_POINTS, int(ROW, COL)]
+                     of int(0..LARGER)
+
+$ These are the states of the board after each respective move.
+$ states[0] is the initial_grid with the starting point filled.
+$ states[1] is the grid after the first
+$ states[2] is the grid after the second line and so on
+$ until states[numberOfTurningPoints] is the grid after the last line
+$ All states after that are the same as the previous state
+$  (empty lines have no effect).
+$  These states should all be filled with blacks.
+find states : matrix indexed by [ALL_POINTS, ROW_DOMAIN, COL_DOMAIN]
+                     of int(BLACK, WHITE)
+$</editor-fold>
+
+such that
+
+$<editor-fold> Basic coordinates limitations.
+$ Start from any white cell.
+turningPoints[0, ROW] <= N /\ turningPoints[0, COL] <= M,
+turningPoints[0, ROW] > 0 /\ turningPoints[0, COL] > 0,
+initial_grid[turningPoints[0, ROW], turningPoints[0, COL]] = WHITE,
+
+forAll i : TURNING_POINTS .
+    turningPoints[i, ROW] <= N /\ turningPoints[i, COL] <= M,
+
+$ All turning points are different.
+forAll i : TURNING_POINTS .
+    (i <= numberOfTurningPoints) -> (
+        forAll j : int(0..(i-1)) .
+            (turningPoints[i, ROW] != turningPoints[j, ROW] \/
+             turningPoints[i, COL] != turningPoints[j, COL])
+        ),
+
+$ All turning points are white in the initial grid.
+forAll i : TURNING_POINTS .
+    (i <= numberOfTurningPoints) ->
+    (initial_grid[turningPoints[i, ROW], turningPoints[i, COL]] = WHITE),
+
+$ Consecutive turning points should differ in exactly one coordiante.
+forAll i : TURNING_POINTS . (
+    (i <= numberOfTurningPoints) -> (
+        (turningPoints[i, ROW] = turningPoints[i-1, ROW] \/
+         turningPoints[i, COL] = turningPoints[i-1, COL])
+        /\
+        (turningPoints[i, ROW] != turningPoints[i-1, ROW] \/
+         turningPoints[i, COL] != turningPoints[i-1, COL])
+        )
+    ),
+$</editor-fold>
+
+$<editor-fold> Empty vs Meaningfull Turning Points
+$ Turning points from 0 to numberOfTurningPoints (inclusive) are 'meaningfull'.
+$ Turning points after that index are 'empty', they do not change the state.
+$ The coordiantes of a 'meaningfull' turning are not-empty.
+forAll i : TURNING_POINTS . (
+    (i <= numberOfTurningPoints) ->
+        (turningPoints[i, ROW] != EMPTY /\ turningPoints[i, COL] != EMPTY)
+    ),
+
+$ The coordiantes of an 'empty' turning point are empty.
+forAll i : TURNING_POINTS . (
+    (i > numberOfTurningPoints) ->
+        (turningPoints[i, ROW] = EMPTY /\ turningPoints[i, COL] = EMPTY)
+    ),
+$</editor-fold>
+
+$<editor-fold> First and Last state definitions.
+$ Copy across all cells except the starting point.
+forAll r : ROW_DOMAIN .
+    forAll c : COL_DOMAIN . (
+        (r != turningPoints[0, ROW] \/ c != turningPoints[0, COL]) ->
+            (states[0, r, c] = initial_grid[r, c])
+        ),
+
+$ The cell at the starting point is black.
+states[0, turningPoints[0, ROW], turningPoints[0, COL]] = BLACK,
+
+$ All states after the last turning point are full of blacks.
+forAll i : TURNING_POINTS . (
+    (i >= numberOfTurningPoints) -> (
+        forAll r : ROW_DOMAIN .
+            forAll c : COL_DOMAIN .
+                states[i, r, c] = BLACK
+        )
+    ),
+$</editor-fold>
+
+$<editor-fold> States change with turning points.
+$ For each turning point, grid cells that fall
+$ between it and the previous turning point must change
+$ from   white in the previous grid   to   black in the current grid.
+
+$<editor-fold> Moving up:
+$ In the cases that turningPoints[i] is empty,
+$ the inner implication will succeed because its condition
+$ 'c = turningPoints[i, COL]' will be false for all c
+forAll i : TURNING_POINTS . (
+    (turningPoints[i-1, ROW] > turningPoints[i, ROW]) -> (
+        forAll r : ROW_DOMAIN .
+            forAll c : COL_DOMAIN . (
+                $ Points on line change from white to black.
+                (turningPoints[i, ROW] <= r /\ r < turningPoints[i-1, ROW] /\
+                 c = turningPoints[i, COL]) ->
+                (states[i-1, r, c] = WHITE /\ states[i, r, c] = BLACK)
+            )
+        )
+    ),
+
+$ If turningPoints[i] is empty, then the inner implication will succeed becuase
+$ the state will not be changed,so states[i-1, r, c] = states[i, r, c]
+forAll i : TURNING_POINTS . (
+    (turningPoints[i-1, ROW] > turningPoints[i, ROW]) -> (
+        forAll r : ROW_DOMAIN .
+            forAll c : COL_DOMAIN . (
+                $ Points outside of line remain the same.
+                (turningPoints[i, ROW] > r \/ r >= turningPoints[i-1, ROW] \/
+                 c != turningPoints[i, COL]) ->
+                (states[i-1, r, c] = states[i, r, c])
+            )
+        )
+    ),
+$</editor-fold>
+
+$<editor-fold> Moving down:
+forAll i : TURNING_POINTS . (
+    (turningPoints[i-1, ROW] < turningPoints[i, ROW]) -> (
+        forAll r : ROW_DOMAIN .
+            forAll c : COL_DOMAIN . (
+                $ Points on line change from white to black.
+                (turningPoints[i-1, ROW] < r /\ r <= turningPoints[i, ROW] /\
+                 c = turningPoints[i, COL]) ->
+                (states[i-1, r, c] = WHITE /\ states[i, r, c] = BLACK)
+            )
+        )
+    ),
+
+forAll i : TURNING_POINTS . (
+    (turningPoints[i-1, ROW] < turningPoints[i, ROW]) -> (
+        forAll r : ROW_DOMAIN .
+            forAll c : COL_DOMAIN . (
+                $ Points outside of line remain the same.
+                (turningPoints[i-1, ROW] >= r \/ r > turningPoints[i, ROW] \/
+                 c != turningPoints[i, COL]) ->
+                (states[i-1, r, c] = states[i, r, c])
+            )
+        )
+    ),
+$</editor-fold>
+
+$<editor-fold> Moving left:
+$ In the cases that turningPoints[i] is empty,
+$ the inner implication will succeed because its condition
+$ 'r = turningPoints[i, ROW]' will be false for all r
+forAll i : TURNING_POINTS . (
+    (turningPoints[i-1, COL] > turningPoints[i, COL]) -> (
+        forAll r : ROW_DOMAIN .
+            forAll c : COL_DOMAIN . (
+                $ Points on line change from white to black.
+                (turningPoints[i, COL] <= c /\ c < turningPoints[i-1, COL] /\
+                 r = turningPoints[i, ROW]) ->
+                (states[i-1, r, c] = WHITE /\ states[i, r, c] = BLACK)
+            )
+        )
+    ),
+$ If turningPoints[i] is empty, the inner implication will succeed because
+$ the state will not be changed,so states[i-1, r, c] = states[i, r, c]
+forAll i : TURNING_POINTS . (
+    (turningPoints[i-1, COL] > turningPoints[i, COL]) -> (
+        forAll r : ROW_DOMAIN .
+            forAll c : COL_DOMAIN . (
+                $ Points outside of line remain the same.
+                (turningPoints[i, COL] > c \/ c >= turningPoints[i-1, COL] \/
+                 r != turningPoints[i, ROW]) ->
+                 (states[i-1, r, c] = states[i, r, c])
+            )
+        )
+    ),
+$</editor-fold>
+
+$<editor-fold> Moving right:
+forAll i : TURNING_POINTS . (
+    (turningPoints[i-1, COL] < turningPoints[i, COL]) -> (
+        forAll r : ROW_DOMAIN .
+            forAll c : COL_DOMAIN . (
+                $ Points on line change from white to black.
+                (turningPoints[i-1, COL] < c /\ c <= turningPoints[i, COL] /\
+                 r = turningPoints[i, ROW]) ->
+                (states[i-1, r, c] = WHITE /\ states[i, r, c] = BLACK)
+            )
+        )
+    ),
+forAll i : TURNING_POINTS . (
+    (turningPoints[i-1, COL] < turningPoints[i, COL]) -> (
+        forAll r : ROW_DOMAIN .
+            forAll c : COL_DOMAIN . (
+                $ Points outside of line remain the same.
+                (turningPoints[i-1, COL] >= c \/ c > turningPoints[i, COL] \/
+                 r != turningPoints[i, ROW]) ->
+                 (states[i-1, r, c] = states[i, r, c])
+            )
+        )
+    ),
+$</editor-fold>
+$</editor-fold>
+
+$<editor-fold> Turning points are next to edges or blacks.
+$ Moving up:
+forAll i : TURNING_POINTS . (
+    (turningPoints[i, ROW] != EMPTY /\
+     turningPoints[i-1, ROW] > turningPoints[i, ROW]) -> (
+         turningPoints[i, ROW] = 1 \/
+         states[i-1, turningPoints[i, ROW]-1, turningPoints[i, COL]] = BLACK
+         )
+    ),
+
+$ Moving down:
+forAll i : TURNING_POINTS . (
+    (turningPoints[i-1, ROW] < turningPoints[i, ROW]) -> (
+        turningPoints[i, ROW] = N \/
+        states[i-1, turningPoints[i, ROW]+1, turningPoints[i, COL]] = BLACK
+        )
+    ),
+
+$ Moving left:
+forAll i : TURNING_POINTS . (
+    (turningPoints[i, COL] != EMPTY /\
+     turningPoints[i-1, COL] > turningPoints[i, COL]) -> (
+        turningPoints[i, COL] = 1 \/
+        states[i-1, turningPoints[i, ROW], turningPoints[i, COL]-1] = BLACK
+        )
+    ),
+
+$ Moving right:
+forAll i : TURNING_POINTS . (
+    (turningPoints[i-1, COL] < turningPoints[i, COL]) -> (
+        turningPoints[i, COL] = M \/
+        states[i-1, turningPoints[i, ROW], turningPoints[i, COL]+1] = BLACK
+        )
+    ),
+
+$</editor-fold>
+
+$<editor-fold> Implied constraints.
+$ Blacks persist through states.
+$ forAll i : TURNING_POINTS .
+$     forAll r : ROW_DOMAIN .
+$         forAll c : COL_DOMAIN .
+$             (states[i-1, r, c] = BLACK) -> (
+$                 forAll j : int(i..MAX_TURNING_POINTS) .
+$                     states[j, r, c] = BLACK
+$                 ),
+$</editor-fold>
+true

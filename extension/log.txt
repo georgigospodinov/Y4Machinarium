@@ -1,0 +1,133 @@
+Error output log
+./custom3x5_a.param
+======
+./custom3x5_b.param
+======
+./custom8x4_a.param
+======
+./custom8x4_b.param
+======
+./instance2x2_a.param
+Exception in thread "Thread-0" java.lang.IllegalArgumentException: Illegal Capacity: -2
+	at java.util.ArrayList.<init>(ArrayList.java:157)
+	at savilerow.expression.SafeElement.simplify(SafeElement.java:98)
+	at savilerow.treetransformer.TransformSimplify.processNode(TransformSimplify.java:40)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:101)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.transform(TreeTransformerBottomUpNoWrapper.java:63)
+	at savilerow.treetransformer.TransformMakeTable.DFSfull(TransformMakeTable.java:1295)
+	at savilerow.treetransformer.TransformMakeTable.makeTableLong(TransformMakeTable.java:408)
+	at savilerow.treetransformer.TransformMakeTable.processNode(TransformMakeTable.java:210)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:101)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.transform(TreeTransformerBottomUpNoWrapper.java:63)
+	at savilerow.model.Model.transform(Model.java:228)
+	at savilerow.model.ModelContainer.instancePreFlattening2(ModelContainer.java:408)
+	at savilerow.model.ModelContainer.process(ModelContainer.java:59)
+	at savilerow.SRWorkThread.run(SRWorkThread.java:90)
+======
+./instance2x2_b.param
+Exception in thread "Thread-0" java.lang.IllegalArgumentException: Illegal Capacity: -2
+	at java.util.ArrayList.<init>(ArrayList.java:157)
+	at savilerow.expression.SafeElement.simplify(SafeElement.java:98)
+	at savilerow.treetransformer.TransformSimplifyExtended.processNode(TransformSimplifyExtended.java:45)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:101)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.transform(TreeTransformerBottomUpNoWrapper.java:63)
+	at savilerow.model.Model.simplify(Model.java:140)
+	at savilerow.model.ModelContainer.squashDomains(ModelContainer.java:534)
+	at savilerow.model.ModelContainer.process(ModelContainer.java:55)
+	at savilerow.SRWorkThread.run(SRWorkThread.java:90)
+======
+./instance2x2_c.param
+======
+./instance3x3_a.param
+Exception in thread "Thread-0" java.lang.IllegalArgumentException: Illegal Capacity: -3
+	at java.util.ArrayList.<init>(ArrayList.java:157)
+	at savilerow.expression.SafeElement.simplify(SafeElement.java:98)
+	at savilerow.treetransformer.TransformSimplify.processNode(TransformSimplify.java:40)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:101)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.transform(TreeTransformerBottomUpNoWrapper.java:63)
+	at savilerow.treetransformer.TransformMakeTable.DFSfull(TransformMakeTable.java:1295)
+	at savilerow.treetransformer.TransformMakeTable.makeTableLong(TransformMakeTable.java:408)
+	at savilerow.treetransformer.TransformMakeTable.processNode(TransformMakeTable.java:210)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:101)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.transform(TreeTransformerBottomUpNoWrapper.java:63)
+	at savilerow.model.Model.transform(Model.java:228)
+	at savilerow.model.ModelContainer.instancePreFlattening2(ModelContainer.java:408)
+	at savilerow.model.ModelContainer.process(ModelContainer.java:59)
+	at savilerow.SRWorkThread.run(SRWorkThread.java:90)
+======
+./instance3x3_b.param
+Exception in thread "Thread-0" java.lang.IllegalArgumentException: Illegal Capacity: -3
+	at java.util.ArrayList.<init>(ArrayList.java:157)
+	at savilerow.expression.SafeElement.simplify(SafeElement.java:98)
+	at savilerow.treetransformer.TransformSimplify.processNode(TransformSimplify.java:40)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:101)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.transform(TreeTransformerBottomUpNoWrapper.java:63)
+	at savilerow.treetransformer.TransformMakeTable.DFSfull(TransformMakeTable.java:1295)
+	at savilerow.treetransformer.TransformMakeTable.makeTableLong(TransformMakeTable.java:408)
+	at savilerow.treetransformer.TransformMakeTable.processNode(TransformMakeTable.java:210)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:101)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.recursiveSearch(TreeTransformerBottomUpNoWrapper.java:89)
+	at savilerow.treetransformer.TreeTransformerBottomUpNoWrapper.transform(TreeTransformerBottomUpNoWrapper.java:63)
+	at savilerow.model.Model.transform(Model.java:228)
+	at savilerow.model.ModelContainer.instancePreFlattening2(ModelContainer.java:408)
+	at savilerow.model.ModelContainer.process(ModelContainer.java:59)
+	at savilerow.SRWorkThread.run(SRWorkThread.java:90)
+======
+./instance3x3_c.param
+======
+./instance4x4_a.param
+======
+./instance4x4_b.param
+======
+./instance4x4_c.param
+======
+./instance5x5_a.param
+======
+./instance5x5_b.param
+======
+./instance6x6_a.param
+======
+./instance6x6_b.param
+======
+./instance6x6_c.param
+======
+./instance6x6_d.param
+======
+./instance7x7_a.param
+======
+./instance7x7_b.param
+======
+./instance7x7_c.param
+======
+./instance7x7_d.param
+======
+./instance7x7_e.param
+======
+./instance7x7_f.param
+======
+./instance8x8_a.param
+======
+./instance8x8_b.param
+======
+./instance8x8_c.param
+======
+./instance8x8_d.param
+======

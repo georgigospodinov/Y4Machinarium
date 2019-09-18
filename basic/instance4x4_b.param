@@ -1,0 +1,7 @@
+language ESSENCE' 1.0
+
+letting initial_grid be [
+[0,0,0,1],
+[0,1,0,0],
+[0,0,0,0],
+[0,0,0,0]]

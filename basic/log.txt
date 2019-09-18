@@ -1,0 +1,63 @@
+Error output log
+./custom3x5_a.param
+======
+./custom3x5_b.param
+======
+./custom8x4_a.param
+======
+./custom8x4_b.param
+======
+./instance2x2_a.param
+======
+./instance2x2_b.param
+======
+./instance2x2_c.param
+WARNING: interval 2..1 is out of order. Rewriting to empty interval.
+WARNING: interval 2..1 is out of order. Rewriting to empty interval.
+WARNING: interval 2..1 is out of order. Rewriting to empty interval.
+WARNING: interval 2..1 is out of order. Rewriting to empty interval.
+======
+./instance3x3_a.param
+======
+./instance3x3_b.param
+======
+./instance3x3_c.param
+======
+./instance4x4_a.param
+======
+./instance4x4_b.param
+======
+./instance4x4_c.param
+======
+./instance5x5_a.param
+======
+./instance5x5_b.param
+======
+./instance6x6_a.param
+======
+./instance6x6_b.param
+======
+./instance6x6_c.param
+======
+./instance6x6_d.param
+======
+./instance7x7_a.param
+======
+./instance7x7_b.param
+======
+./instance7x7_c.param
+======
+./instance7x7_d.param
+======
+./instance7x7_e.param
+======
+./instance7x7_f.param
+======
+./instance8x8_a.param
+======
+./instance8x8_b.param
+======
+./instance8x8_c.param
+======
+./instance8x8_d.param
+======
